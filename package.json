@@ -1,11 +1,11 @@
 {
-  "name": "pocketbase-mcp",
+  "name": "pocket-base-mcp",
   "version": "1.0.0",
   "description": "Complete Model Context Protocol (MCP) server for PocketBase — collections, records, auth, files, logs, settings, backups, crons and more.",
   "type": "module",
   "mcpName": "io.github.nestebe/pocketbase-mcp",
   "bin": {
-    "pocketbase-mcp": "dist/index.js"
+    "pocket-base-mcp": "dist/index.js"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
