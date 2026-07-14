@@ -12,7 +12,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "pocket-base-mcp",
+      "identifier": "pocketbase-mcp-bridge",
       "version": "1.0.0",
       "runtimeHint": "npx",
       "transport": {

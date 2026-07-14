@@ -1,9 +1,9 @@
 # PocketBase MCP Server
 
-[![npm version](https://img.shields.io/npm/v/pocket-base-mcp.svg)](https://www.npmjs.com/package/pocket-base-mcp)
+[![npm version](https://img.shields.io/npm/v/pocketbase-mcp-bridge.svg)](https://www.npmjs.com/package/pocketbase-mcp-bridge)
 [![CI](https://github.com/nestebe/pocketbase-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/nestebe/pocketbase-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Node](https://img.shields.io/node/v/pocket-base-mcp.svg)](https://nodejs.org)
+[![Node](https://img.shields.io/node/v/pocketbase-mcp-bridge.svg)](https://nodejs.org)
 
 A **complete** [Model Context Protocol](https://modelcontextprotocol.io) server for
 [PocketBase](https://pocketbase.io). It exposes the full PocketBase management surface —
@@ -70,7 +70,7 @@ Claude Code, Cursor, …). The recommended, zero-install form uses `npx`:
   "mcpServers": {
     "pocketbase": {
       "command": "npx",
-      "args": ["-y", "pocket-base-mcp"],
+      "args": ["-y", "pocketbase-mcp-bridge"],
       "env": {
         "POCKETBASE_URL": "",
         "POCKETBASE_ADMIN_EMAIL": "",
@@ -118,7 +118,7 @@ server non-interactively.
         "-e", "POCKETBASE_URL",
         "-e", "POCKETBASE_ADMIN_EMAIL",
         "-e", "POCKETBASE_ADMIN_PASSWORD",
-        "pocket-base-mcp"
+        "pocketbase-mcp-bridge"
       ],
       "env": {
         "POCKETBASE_URL": "http://host.docker.internal:8090",
@@ -135,7 +135,7 @@ server non-interactively.
 
 ## Installation
 
-The published package works out of the box with `npx -y pocket-base-mcp` (see above) —
+The published package works out of the box with `npx -y pocketbase-mcp-bridge` (see above) —
 no manual install needed once it is on npm.
 
 To build from source:
@@ -148,17 +148,17 @@ npm run build      # compiles TypeScript to dist/
 ```
 
 The entry point is `dist/index.js` (a stdio MCP server with a `#!/usr/bin/env node`
-shebang, also exposed as the `pocket-base-mcp` bin).
+shebang, also exposed as the `pocketbase-mcp-bridge` bin).
 
 ### Docker image
 
 ```bash
-docker build -t pocket-base-mcp .
+docker build -t pocketbase-mcp-bridge .
 docker run -i --rm \
   -e POCKETBASE_URL=http://host.docker.internal:8090 \
   -e POCKETBASE_ADMIN_EMAIL=admin@example.com \
   -e POCKETBASE_ADMIN_PASSWORD=secret \
-  pocket-base-mcp
+  pocketbase-mcp-bridge
 ```
 
 The image is a stdio server — run it with `-i` (interactive) so the MCP client can talk
