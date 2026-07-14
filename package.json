@@ -3,16 +3,32 @@
   "version": "1.0.0",
   "description": "Complete Model Context Protocol (MCP) server for PocketBase — collections, records, auth, files, logs, settings, backups, crons and more.",
   "type": "module",
+  "mcpName": "io.github.nestebe/pocketbase-mcp",
   "bin": {
     "pocketbase-mcp": "dist/index.js"
   },
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
   "files": [
     "dist",
     "README.md"
   ],
   "engines": {
     "node": ">=18"
+  },
+  "homepage": "https://github.com/nestebe/pocketbase-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nestebe/pocketbase-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nestebe/pocketbase-mcp/issues"
   },
   "scripts": {
     "build": "tsc",
@@ -24,6 +40,7 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "modelcontextprotocol",
     "pocketbase",
     "claude",
     "llm",
@@ -32,6 +49,10 @@
   ],
   "author": "Nicolas ESTEBE <devestebe@gmail.com>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "pocketbase": "^0.26.2",

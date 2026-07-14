@@ -2,6 +2,9 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { readFile, writeFile } from "node:fs/promises";
 import { basename } from "node:path";
+// `File` is only a global from Node 20+; importing from node:buffer keeps the
+// server working on Node 18.13+ (see package.json "engines").
+import { File } from "node:buffer";
 import { withAuth } from "../pocketbase.js";
 import { ok, handler } from "../util.js";
 

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nestebe/pocketbase-mcp",
+  "title": "PocketBase MCP",
+  "description": "Complete MCP server for PocketBase — collections, records, auth, files, logs, settings, backups and crons.",
+  "repository": {
+    "url": "https://github.com/nestebe/pocketbase-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "pocketbase-mcp",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "POCKETBASE_URL",
+          "description": "Base URL of the PocketBase instance, e.g. http://127.0.0.1:8090",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "POCKETBASE_ADMIN_EMAIL",
+          "description": "Superuser email used to authenticate against PocketBase",
+          "isRequired": false,
+          "isSecret": false
+        },
+        {
+          "name": "POCKETBASE_ADMIN_PASSWORD",
+          "description": "Superuser password used to authenticate against PocketBase",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

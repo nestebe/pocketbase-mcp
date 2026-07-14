@@ -1,5 +1,10 @@
 # PocketBase MCP Server
 
+[![npm version](https://img.shields.io/npm/v/pocketbase-mcp.svg)](https://www.npmjs.com/package/pocketbase-mcp)
+[![CI](https://github.com/nestebe/pocketbase-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/nestebe/pocketbase-mcp/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Node](https://img.shields.io/node/v/pocketbase-mcp.svg)](https://nodejs.org)
+
 A **complete** [Model Context Protocol](https://modelcontextprotocol.io) server for
 [PocketBase](https://pocketbase.io). It exposes the full PocketBase management surface —
 collections, records, authentication, files, logs, settings, backups and crons — as MCP
@@ -58,14 +63,14 @@ The server reads its connection settings from environment variables:
 ### MCP client config
 
 Add the server to your MCP client (Claude Desktop `claude_desktop_config.json`,
-Claude Code, Cursor, …):
+Claude Code, Cursor, …). The recommended, zero-install form uses `npx`:
 
 ```json
 {
   "mcpServers": {
     "pocketbase": {
-      "command": "node",
-      "args": ["C:/Projets/Github/pocketbase-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "pocketbase-mcp"],
       "env": {
         "POCKETBASE_URL": "",
         "POCKETBASE_ADMIN_EMAIL": "",
@@ -76,17 +81,67 @@ Claude Code, Cursor, …):
 }
 ```
 
-Fill the three `env` values with your instance URL and superuser credentials. Once the
-package is published to npm you can instead use `"command": "npx"` with
-`"args": ["-y", "pocketbase-mcp"]`.
+Fill the three `env` values with your instance URL and superuser credentials
+(keep secrets in `env`, never in `args`). The `-y` flag lets clients launch the
+server non-interactively.
+
+<details>
+<summary>Alternative: run from a local build (no npm install)</summary>
+
+```json
+{
+  "mcpServers": {
+    "pocketbase": {
+      "command": "node",
+      "args": ["/absolute/path/to/pocketbase-mcp/dist/index.js"],
+      "env": {
+        "POCKETBASE_URL": "",
+        "POCKETBASE_ADMIN_EMAIL": "",
+        "POCKETBASE_ADMIN_PASSWORD": ""
+      }
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary>Alternative: run via Docker</summary>
+
+```json
+{
+  "mcpServers": {
+    "pocketbase": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "POCKETBASE_URL",
+        "-e", "POCKETBASE_ADMIN_EMAIL",
+        "-e", "POCKETBASE_ADMIN_PASSWORD",
+        "pocketbase-mcp"
+      ],
+      "env": {
+        "POCKETBASE_URL": "http://host.docker.internal:8090",
+        "POCKETBASE_ADMIN_EMAIL": "",
+        "POCKETBASE_ADMIN_PASSWORD": ""
+      }
+    }
+  }
+}
+```
+</details>
 
 ---
 
 ## Installation
 
+The published package works out of the box with `npx -y pocketbase-mcp` (see above) —
+no manual install needed once it is on npm.
+
+To build from source:
+
 ```bash
-# from source
-git clone <this-repo>
+git clone https://github.com/nestebe/pocketbase-mcp.git
 cd pocketbase-mcp
 npm install
 npm run build      # compiles TypeScript to dist/
@@ -94,6 +149,20 @@ npm run build      # compiles TypeScript to dist/
 
 The entry point is `dist/index.js` (a stdio MCP server with a `#!/usr/bin/env node`
 shebang, also exposed as the `pocketbase-mcp` bin).
+
+### Docker image
+
+```bash
+docker build -t pocketbase-mcp .
+docker run -i --rm \
+  -e POCKETBASE_URL=http://host.docker.internal:8090 \
+  -e POCKETBASE_ADMIN_EMAIL=admin@example.com \
+  -e POCKETBASE_ADMIN_PASSWORD=secret \
+  pocketbase-mcp
+```
+
+The image is a stdio server — run it with `-i` (interactive) so the MCP client can talk
+to it over stdin/stdout.
 
 ---
 
@@ -179,6 +248,52 @@ npm run watch     # tsc --watch
 npm run dev       # run from TS via tsx (no build step)
 ```
 
+---
+
+## Publishing (maintainers)
+
+The package is distributed on **npm** and listed in the official **MCP Registry**.
+Both are automated by [`.github/workflows/release.yml`](.github/workflows/release.yml),
+triggered when you publish a GitHub Release.
+
+**One-time setup**
+
+- Create an npm **Automation** (or granular, read+write) access token and add it as the
+  repository secret `NPM_TOKEN`. (Later you can migrate to tokenless
+  [Trusted Publishing / OIDC](https://docs.npmjs.com/trusted-publishers/) and drop the secret.)
+- The MCP Registry step uses **GitHub OIDC** (`id-token: write`) — no secret needed. It
+  publishes under the `io.github.nestebe/*` namespace, verified by the `mcpName` field in
+  `package.json` matching the `name` in [`server.json`](server.json).
+
+**Cut a release**
+
+```bash
+npm version patch          # or minor / major — bumps package.json + creates a git tag
+# keep server.json "version" in sync with package.json, then commit it
+git push --follow-tags
+gh release create v1.0.0 --generate-notes   # publishing the release fires the workflow
+```
+
+The workflow then: builds → `npm publish --provenance --access public` → publishes the
+`server.json` metadata to the registry.
+
+**Manual publish (without CI)**
+
+```bash
+npm publish --access public            # npm (must include the mcpName field)
+# then, from the repo root:
+mcp-publisher login github             # interactive GitHub OAuth (owner of "nestebe")
+mcp-publisher publish                  # pushes server.json to registry.modelcontextprotocol.io
+```
+
+Before releasing, verify the tarball and package health:
+
+```bash
+npm publish --dry-run     # inspect exactly what ships
+npx publint               # lint package.json/exports/bin for publish issues
+```
+
 ## License
 
-MIT
+MIT © Nicolas ESTEBE
+

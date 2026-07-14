@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Spin up a real PocketBase instance so the smoke tests exercise the tools
+    # end-to-end against a live server (same version we validate against locally).
+    services:
+      pocketbase:
+        image: ghcr.io/muchobien/pocketbase:0.39.6
+        ports:
+          - 8090:8090
+        env:
+          PB_ADMIN_EMAIL: admin@yourdomain.com
+          PB_ADMIN_PASSWORD: your-secure-password-here
+        options: >-
+          --health-cmd "wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+          --health-start-period 10s
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke tests (against live PocketBase)
+        env:
+          POCKETBASE_URL: http://127.0.0.1:8090
+          POCKETBASE_ADMIN_EMAIL: admin@yourdomain.com
+          POCKETBASE_ADMIN_PASSWORD: your-secure-password-here
+        run: |
+          node scripts/smoke-test.mjs
+          node scripts/smoke-test-files-auth.mjs

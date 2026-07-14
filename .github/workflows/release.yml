@@ -1,0 +1,71 @@
+name: Release
+
+# Publishes to npm (with provenance) and then to the official MCP Registry
+# whenever you publish a GitHub Release. Create the release from a version tag
+# produced by `npm version` (e.g. v1.0.0).
+on:
+  release:
+    types: [published]
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1) Publish the package to npm with a signed provenance attestation.
+  # ---------------------------------------------------------------------------
+  npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # mints the OIDC token npm uses to sign the provenance attestation
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # --provenance    -> publish a public, verifiable build-provenance attestation
+      # --access public  -> required for the first publish of a public package
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ---------------------------------------------------------------------------
+  # 2) Publish the server metadata to the official MCP Registry.
+  #    Runs only after npm succeeds; if this job fails you can re-run it alone
+  #    from the Actions UI without affecting the (immutable) npm release.
+  # ---------------------------------------------------------------------------
+  mcp-registry:
+    needs: npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # GitHub OIDC auth to the MCP Registry (no stored secret needed)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      # Give npm's registry a moment to make the new version's package.json
+      # (with the "mcpName" marker) available for the ownership check.
+      - name: Wait for npm propagation
+        run: sleep 20
+
+      - name: Authenticate to MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        run: ./mcp-publisher publish

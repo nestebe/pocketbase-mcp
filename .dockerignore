@@ -1,0 +1,14 @@
+node_modules
+dist
+docker-test
+test-docker
+.git
+.gitignore
+.github
+*.log
+.env
+.env.*
+!.env.example
+npm-debug.log*
+scripts
+CHANGELOG.md

@@ -120,6 +120,15 @@ async function main() {
   const zipOk = existsSync(bdlPath) && readFileSync(bdlPath).slice(0, 2).toString("latin1") === "PK";
   log("download_backup", bdl.success === true && zipOk, `bytes=${bdl.bytes}, isZip=${zipOk}`);
 
+  // Upload the downloaded backup back under a new key — exercises upload_backup (new File)
+  const upKey = "mcp_pb_backup.zip"; // = basename(bdlPath)
+  try { await call(client, "delete_backup", { key: upKey }); } catch { /* none */ }
+  await call(client, "upload_backup", { path: bdlPath });
+  const backups2 = await call(client, "list_backups");
+  const uploaded = Array.isArray(backups2) && backups2.some((b) => b.key === upKey);
+  log("upload_backup", uploaded, `key=${upKey}`);
+  if (uploaded) await call(client, "delete_backup", { key: upKey });
+
   const bdel = await call(client, "delete_backup", { key: backupName });
   log("delete_backup", bdel.success === true);
 
