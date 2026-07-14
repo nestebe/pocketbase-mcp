@@ -1,0 +1,93 @@
+# ---------------------------------------------------------------------------
+# Dependencies
+# ---------------------------------------------------------------------------
+node_modules/
+.pnp/
+.pnp.js
+jspm_packages/
+
+# ---------------------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------------------
+dist/
+build/
+out/
+*.tsbuildinfo
+.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Environment & secrets  (NEVER commit real credentials — .env.example is kept)
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------------------------
+# Logs & diagnostics
+# ---------------------------------------------------------------------------
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+report.*.json
+
+# ---------------------------------------------------------------------------
+# PocketBase test instance (docker-test/)
+# Keep the folder structure but ignore all runtime data, uploads and backups.
+# ---------------------------------------------------------------------------
+docker-test/pb_data/
+docker-test/pb_public/*
+docker-test/pb_hooks/*
+!docker-test/pb_public/.gitkeep
+!docker-test/pb_hooks/.gitkeep
+
+# Generic PocketBase runtime data / backups (in case the instance runs elsewhere)
+pb_data/
+*.pb_backup
+backups/
+
+# Leftover from an earlier setup (may be OS-locked on Windows; delete manually)
+test-docker/
+
+# ---------------------------------------------------------------------------
+# Caches & tooling
+# ---------------------------------------------------------------------------
+.cache/
+.npm/
+.eslintcache
+.stylelintcache
+coverage/
+.nyc_output/
+*.tgz
+.temp/
+.tmp/
+tmp/
+
+# ---------------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ---------------------------------------------------------------------------
+# OS-generated files
+# ---------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/

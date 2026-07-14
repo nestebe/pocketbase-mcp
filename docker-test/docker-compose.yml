@@ -1,0 +1,41 @@
+services:
+  pocketbase:
+    # Pinned to the version used to develop/validate this MCP server.
+    image: ghcr.io/muchobien/pocketbase:0.39.6
+    container_name: pocketbase
+    restart: unless-stopped
+    environment:
+      # Auto-create the initial superuser on first boot.
+      # These are also the credentials the MCP server uses (see .env.example).
+      PB_ADMIN_EMAIL: admin@yourdomain.com
+      PB_ADMIN_PASSWORD: your-secure-password-here
+      TZ: Europe/Paris
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb_data
+      - ./pb_public:/pb_public
+      - ./pb_hooks:/pb_hooks
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8090/api/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# Notes:
+# - Dashboard:  http://localhost:8090/_/
+# - REST API:   http://localhost:8090/api/
+# - Settings encryption is intentionally disabled here for a friction-free local
+#   test setup. For production, enable it with a *32-character* key, e.g.:
+#     command: ["--encryptionEnv", "ENCRYPTION"]
+#     environment:
+#       ENCRYPTION: "0123456789abcdef0123456789abcdef"  # exactly 32 chars
